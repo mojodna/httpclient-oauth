@@ -66,7 +66,13 @@ public class OAuthScheme implements AuthScheme {
 		String protocol = "http://";
 		// TODO get the host from somewhere better
 		// TODO normalize (remove 80 for http, 443 for https)
-		String hostname = request.getHeaders("Host")[0].getValue();
+		String hostname = null;
+		Header[] hostHeaders = null;
+		if ((hostHeaders = request.getHeaders("Host")).length > 0) {
+			hostname = hostHeaders[0].getValue();
+		} else {
+			throw new AuthenticationException("Host could not be determined.");
+		}
 
 		System.out.println("Method: " + request.getMethod());
 		System.out.println("Request url: " + hostname
@@ -189,8 +195,9 @@ public class OAuthScheme implements AuthScheme {
 	public void processChallenge(Header header)
 			throws MalformedChallengeException {
 		System.err.println("OAuthScheme#processChallenge");
-		// TODO I suppose this is where we would convert request tokens to
-		// access tokens or just refresh them
+		// TODO this is either the place to convert request tokens / refresh
+		// access tokens or to look for a WWW-Authenticate header stating that
+		// OAuth should be used
 	}
 
 }
